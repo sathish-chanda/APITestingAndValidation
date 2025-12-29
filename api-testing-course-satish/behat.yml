@@ -1,0 +1,9 @@
+# behat.yml
+
+default:
+  suites:
+    default:
+      contexts:
+        - FeatureContext:
+            parameters:
+              github_token: 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
