@@ -21,7 +21,7 @@ class FeatureContext implements Context
      * You can also pass arbitrary arguments to the
      * context constructor through behat.yml.
      */
-    public function __construct(array $parameters = [])
+    public function __construct( array $parameters = [] )
     {
         $this->params = $parameters;
         $this->client = new \Github\Client();
