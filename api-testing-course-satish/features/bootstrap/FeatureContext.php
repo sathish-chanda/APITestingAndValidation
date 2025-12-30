@@ -75,6 +75,10 @@ class FeatureContext implements Context
     public function iRequestIssuesForTheRepositoryFromUser($arg1, $arg2)
     {
         $issues = $this->client->issues()->all($arg1,$arg2);
+        $statusCode = $this->client->getLastResponse()->getStatusCode();
+        if($statusCode != 200) {
+           throw new Exception("Expected a 200 status code but got $statusCode instead!"); 
+        }
         $this->result = $issues;
     }
 
