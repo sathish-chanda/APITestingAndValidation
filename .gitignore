@@ -3,3 +3,4 @@ node_modules
 .tmp
 npm-debug.log
 **/vendor
+api-testing-course-satish/behat.yml
