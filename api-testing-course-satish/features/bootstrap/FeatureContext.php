@@ -91,4 +91,29 @@ class FeatureContext implements Context
             throw new Exception("Expected at least $arg1 result but got back " . count($this->result));
         }
     }
+
+
+    /**
+     * @Given I am authenticated user
+     */
+    public function iAmAuthenticatedUser()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @When I request a list of my repositories
+     */
+    public function iRequestAListOfMyRepositories()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the results should include a repository named :arg1
+     */
+    public function theResultsShouldIncludeARepositoryNamed($arg1)
+    {
+        throw new PendingException();
+    }
 }
