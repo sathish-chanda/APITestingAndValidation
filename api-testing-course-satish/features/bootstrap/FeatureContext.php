@@ -94,11 +94,13 @@ class FeatureContext implements Context
 
 
     /**
-     * @Given I am authenticated user
+     * @Given I am an authenticated user
      */
     public function iAmAuthenticatedUser()
     {
-        throw new PendingException();
+        $this->client->authenticate(
+            $this->params['github_token'], null, Github\AuthMethod::ACCESS_TOKEN
+        );
     }
 
     /**
@@ -106,7 +108,12 @@ class FeatureContext implements Context
      */
     public function iRequestAListOfMyRepositories()
     {
-        throw new PendingException();
+        $repositories = $this->client->api('current_user')->repositories();
+        $statusCode = $this->client->getLastResponse()->getStatusCode();
+        if($statusCode != 200) {
+            throw new Exception("Expected a 200 status code but got $statusCode instead!"); 
+        }
+        $this->results = $repositories;
     }
 
     /**
@@ -114,6 +121,11 @@ class FeatureContext implements Context
      */
     public function theResultsShouldIncludeARepositoryNamed($arg1)
     {
-        throw new PendingException();
+        foreach($this->results as $repo) {
+            if($repo['name'] == $arg1) {
+                return true;
+            }
+        }
+        throw new Exception("Expected to find a repository called '$arg1' but it doesn't exists!");
     }
 }
