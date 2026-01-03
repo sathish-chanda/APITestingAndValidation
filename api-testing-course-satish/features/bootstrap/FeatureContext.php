@@ -128,4 +128,54 @@ class FeatureContext implements Context
         }
         throw new Exception("Expected to find a repository called '$arg1' but it doesn't exists!");
     }
+
+    /**
+     * @When I star my :arg1 repository
+     */
+    public function iStarMyRepository($arg1)
+    {
+       $githubUser = $this->client->api('current_user')->show()['login'];
+       $this->client->api('current_user')->starring()->star($githubUser,$arg1);
+    }
+
+    /**
+     * @Then my :arg1 repository will list me as a stargazer
+     */
+    public function myRepositoryWillListMeAsAStargazer($arg1)
+    {
+        $githubUser = $this->client->api('current_user')->show()['login'];
+        $repo = $githubUser . '/' . $arg1;
+        $stargazers = $this->client->api('repo')->stargazers()->all($githubUser,$arg1);
+        foreach($stargazers as $stargazer) {
+            if ($githubUser == $stargazer['login']) {
+                return true;
+            }
+        }
+        throw new Exception("Expected $githubUser to be a stargazer of the '$repo' but they were not");
+    }
+
+    /**
+     * @When I unstar my :arg1 repository
+     */
+    public function iUnstarMyRepository($arg1)
+    {
+       $githubUser = $this->client->api('current_user')->show()['login'];
+       $this->client->api('current_user')->starring()->unstar($githubUser,$arg1);
+    }
+
+    /**
+     * @Then my :arg1 repository will not list me as a stargazer
+     */
+    public function myRepositoryWillNotListMeAsAStargazer($arg1)
+    {
+        $githubUser = $this->client->api('current_user')->show()['login'];
+        $repo = $githubUser . '/' . $arg1;
+        $stargazers = $this->client->api('repo')->stargazers()->all($githubUser,$arg1);
+        foreach($stargazers as $stargazer) {
+            if ($githubUser == $stargazer['login']) {
+                throw new Exception("Expected $githubUser to be a not stargazer of the '$repo' but they were stargazer.");
+            }
+        }
+        return true;
+    }
 }
