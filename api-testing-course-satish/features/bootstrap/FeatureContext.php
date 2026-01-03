@@ -139,22 +139,6 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then my :arg1 repository will list me as a stargazer
-     */
-    public function myRepositoryWillListMeAsAStargazer($arg1)
-    {
-        $githubUser = $this->client->api('current_user')->show()['login'];
-        $repo = $githubUser . '/' . $arg1;
-        $stargazers = $this->client->api('repo')->stargazers()->all($githubUser,$arg1);
-        foreach($stargazers as $stargazer) {
-            if ($githubUser == $stargazer['login']) {
-                return true;
-            }
-        }
-        throw new Exception("Expected $githubUser to be a stargazer of the '$repo' but they were not");
-    }
-
-    /**
      * @When I unstar my :arg1 repository
      */
     public function iUnstarMyRepository($arg1)
@@ -164,18 +148,30 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Then my :arg1 repository will list me as a stargazer
+     */
+    public function myRepositoryWillListMeAsAStargazer($arg1)
+    {
+        $githubUser = $this->client->api('current_user')->show()['login'];
+        if(!$this->isAStargazer($githubUser,$arg1)) {
+           throw new Exception("Expected $githubUser to be a stargazer of the '$arg1' but they were not");
+        } 
+    }
+
+    /**
      * @Then my :arg1 repository will not list me as a stargazer
      */
     public function myRepositoryWillNotListMeAsAStargazer($arg1)
     {
         $githubUser = $this->client->api('current_user')->show()['login'];
-        $repo = $githubUser . '/' . $arg1;
-        $stargazers = $this->client->api('repo')->stargazers()->all($githubUser,$arg1);
-        foreach($stargazers as $stargazer) {
-            if ($githubUser == $stargazer['login']) {
-                throw new Exception("Expected $githubUser to be a not stargazer of the '$repo' but they were stargazer.");
-            }
+        if($this->isAStargazer($githubUser,$arg1)) {
+            throw new Exception("Expected $githubUser to not be a stargazer of the '$$arg1' but they were.");
         }
-        return true;
+    }
+
+    protected function isAStargazer($user, $repo) {
+        $_stargazers = $this->client->api('repo')->stargazers()->all($user,$repo);
+        $stargazers = array_column($_stargazers, 'login', 'login');
+        return isset($stargazers[$user]);
     }
 }
